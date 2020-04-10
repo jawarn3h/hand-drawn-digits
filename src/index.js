@@ -1,3 +1,6 @@
+
+// SORRY FOR THE INDENTATION MESS... I WROTE THIS IN VIM. //
+
 let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d');
 let isWriting = false;
