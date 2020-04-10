@@ -1,6 +1,3 @@
-
-// SORRY FOR THE INDENTATION MESS... I WROTE THIS IN VIM. //
-
 let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d');
 let isWriting = false;
@@ -67,7 +64,6 @@ let createGrid = () => {
 
 	gridBounding = [anchorX, anchorX + (pixelDim * gridWidth), anchorY, anchorY + (pixelDim * gridHeight)];
 
-
 	for (let i = 0; i < gridHeight; i++) {
 		let x = anchorX + (pixelDim * i);
 		for (let j = 0; j < gridWidth; j++) {
@@ -84,8 +80,6 @@ let inBounds = (x, y, target) => {
 		(y > target[2] && y < target[3]);
 }
 
-createGrid();
-
 window.addEventListener('mousedown', e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
@@ -94,7 +88,6 @@ window.addEventListener('mousedown', e => {
 		isWriting = true;
 	}
 });
-
 
 // GRID EVENT HANDLERS
 
@@ -159,4 +152,7 @@ let predict = (r) => {
 	tensor = tf.expandDims(tensor, 0);
 	return model.predict(tensor);
 };
+
+// Start...
+createGrid();
 loadNeuralNet();
