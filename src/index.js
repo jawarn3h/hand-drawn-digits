@@ -24,9 +24,9 @@ const gridWidth = 28;
 let mouseX = 0;
 let mouseY = 0;
 
-let h_scaler = size => Math.floor(canvas.height * size/2);
-let w_scaler = size => Math.floor(canvas.width * size/2);
-let fragment = size => Math.floor((canvas.width * size)/gridWidth)
+let h_scaler = size => Math.floor(canvas.height * size / 2);
+let w_scaler = size => Math.floor(canvas.width * size / 2);
+let fragment = size => Math.floor((canvas.width * size) / gridWidth)
 
 let pixels = [];
 
@@ -40,12 +40,12 @@ class Pixel {
 	}
 
 	draw() {
-		if(!this.isOn) { 
+		if (!this.isOn) {
 			ctx.fillStyle = '#d3d3d3';
 			ctx.strokeStyle = '#000000'
 		} else {
 			ctx.fillStyle = '#838383';
-            ctx.strokeStyle = '#000000'
+			ctx.strokeStyle = '#000000'
 		}
 		ctx.beginPath();
 		ctx.fillRect(this.x, this.y, this.dim, this.dim);
@@ -65,12 +65,12 @@ let createGrid = () => {
 	anchorX = w_scaler(0.7);
 	anchorY = h_scaler(0.7);
 
-	gridBounding = [anchorX, anchorX + (pixelDim*gridWidth), anchorY, anchorY + (pixelDim*gridHeight)];
+	gridBounding = [anchorX, anchorX + (pixelDim * gridWidth), anchorY, anchorY + (pixelDim * gridHeight)];
 
 
-	for(let i = 0; i < gridHeight; i++) {
+	for (let i = 0; i < gridHeight; i++) {
 		let x = anchorX + (pixelDim * i);
-		for(let j = 0; j < gridWidth; j++) {
+		for (let j = 0; j < gridWidth; j++) {
 			let y = anchorY + (pixelDim * j);
 			let p = new Pixel(x, y, pixelDim);
 			p.draw();
@@ -81,7 +81,7 @@ let createGrid = () => {
 
 let inBounds = (x, y, target) => {
 	return (x > target[0] && x < target[1]) &&
-		   (y > target[2] && y < target[3]);
+		(y > target[2] && y < target[3]);
 }
 
 createGrid();
@@ -90,7 +90,7 @@ window.addEventListener('mousedown', e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
 
-	if(inBounds(mouseX, mouseY, gridBounding)) {
+	if (inBounds(mouseX, mouseY, gridBounding)) {
 		isWriting = true;
 	}
 });
@@ -102,25 +102,25 @@ window.addEventListener('mousemove', e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
 
-	if(!inBounds(mouseX, mouseY, gridBounding)) {
+	if (!inBounds(mouseX, mouseY, gridBounding)) {
 		isWriting = false;
 	}
-	else if(isWriting) {
+	else if (isWriting) {
 		pixels.forEach(p => {
-			if(!p.isOn) {
-				if(inBounds(mouseX, mouseY, p.bounding)) {
+			if (!p.isOn) {
+				if (inBounds(mouseX, mouseY, p.bounding)) {
 					p.isOn = true;
 					p.draw();
 				}
 			}
-		});	
+		});
 	}
 });
 
 window.addEventListener('mouseup', e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
-	
+
 	isWriting = false;
 	raw_matrix = parseGrid();
 	// Predict with model.
@@ -142,7 +142,7 @@ let parseGrid = () => {
 	for (let i = 0; i < gridHeight; i++) {
 		matrix_col = [];
 		for (let j = 0; j < gridWidth; j++) {
-			if(pixels[j + (gridHeight * i)].isOn) {
+			if (pixels[j + (gridHeight * i)].isOn) {
 				matrix_col.push(1.);
 			} else {
 				matrix_col.push(0);
@@ -155,9 +155,9 @@ let parseGrid = () => {
 }
 
 let predict = (r) => {
-	tensor = tf.tensor(r, [28, 28, 1],  'float32');
+	tensor = tf.tensor(r, [28, 28, 1], 'float32');
 	tensor = tf.expandDims(tensor, 0);
 	return model.predict(tensor);
-}; 
+};
 loadNeuralNet();
 
