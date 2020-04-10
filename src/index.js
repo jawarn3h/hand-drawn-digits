@@ -89,7 +89,7 @@ window.addEventListener('mousedown', e => {
 	}
 });
 
-// GRID EVENT HANDLERS
+// GRID EVENT HANDLERS // 
 
 window.addEventListener('mousemove', e => {
 	mouseX = e.clientX;
