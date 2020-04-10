@@ -8,13 +8,17 @@ html, body{
 	height: 100%;
 	overflow: hidden;
 }
-.canvas {
+
+#wrapper {
+	width: 100%;
+	height: 100%;
+}
+.grid {
+	position: absolute;
 	width: 100%;
 	height: 100%;
 	background-color: #f77f9b;
 	z-index: 0;
 }
 
-button {
-	z-index: 1;
-}
+

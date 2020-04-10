@@ -54,12 +54,20 @@ class Pixel {
 	}
 }
 
-const pixelDim = fragment(0.3);
-const anchorX = w_scaler(0.2);
-const anchorY = h_scaler(0.3);
-const gridBounding = [anchorX, anchorX + (pixelDim*gridWidth), anchorY, anchorY + (pixelDim*gridHeight)];
+let pixelDim = null;
+let anchorX = null;
+let anchorY = null;
+let gridBounding = null;
 
 let createGrid = () => {
+
+	pixelDim = fragment(0.3);
+	anchorX = w_scaler(0.7);
+	anchorY = h_scaler(0.7);
+
+	gridBounding = [anchorX, anchorX + (pixelDim*gridWidth), anchorY, anchorY + (pixelDim*gridHeight)];
+
+
 	for(let i = 0; i < gridHeight; i++) {
 		let x = anchorX + (pixelDim * i);
 		for(let j = 0; j < gridWidth; j++) {
@@ -116,15 +124,17 @@ window.addEventListener('mouseup', e => {
 	isWriting = false;
 	raw_matrix = parseGrid();
 	// Predict with model.
-	console.log(predict(raw_matrix));
+	predict(raw_matrix).print();
 });
 
-// TensorFlow.js stuff.
+// TensorFlow.js stuff. //
 
 // Load MNIST_Model...
 
+let model = null;
+
 async function loadNeuralNet() {
-	const model = tf.loadModel('../models/tfjs_files/model.json');
+	model = await tf.loadLayersModel('https://neuralnetai.github.io/models/tfjs_files/model.json');
 }
 // Parses our grid into a matrix so we can then convert to a tensor.
 let parseGrid = () => {
@@ -145,7 +155,8 @@ let parseGrid = () => {
 }
 
 let predict = (r) => {
-	tensor = tf.tensor2d(r, 'float32');
+	tensor = tf.tensor(r, [28, 28, 1],  'float32');
+	tensor = tf.expandDims(tensor, 0);
 	return model.predict(tensor);
 }; 
 loadNeuralNet();
