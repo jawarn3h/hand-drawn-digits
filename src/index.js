@@ -114,10 +114,12 @@ window.addEventListener('mouseup', e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
 
+    if (isWriting) {
+        raw_matrix = parseGrid();
+        // Predict with CNN.
+        predict(raw_matrix).print();
+    }
 	isWriting = false;
-	raw_matrix = parseGrid();
-	// Predict with model.
-	predict(raw_matrix).print();
 });
 
 // TensorFlow.js stuff. //
