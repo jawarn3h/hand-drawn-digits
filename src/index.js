@@ -160,4 +160,3 @@ let predict = (r) => {
 	return model.predict(tensor);
 };
 loadNeuralNet();
-
