@@ -1,4 +1,6 @@
 let canvas = document.querySelector('canvas');
+let ctx_ = document.getElementById('chart').getContext('2d');
+
 let ctx = canvas.getContext('2d');
 let isWriting = false;
 
@@ -7,23 +9,27 @@ let updateCanvas = () => {
 	canvas.width = window.innerWidth;
 }
 
-// Window Handlers.
-window.onload = updateCanvas();
-window.addEventListener('resize', (e) => {
-	updateCanvas();
+let reset = () => {
+    updateCanvas();
 	pixels = [];
 	createGrid();
+}
+
+// Window Handlers.
+window.onload = updateCanvas();
+window.addEventListener('resize', e => reset());
+window.addEventListener('keyup', e => {
+    if(e.keyCode == 67) {
+        reset();
+    }
 });
+
 
 const gridHeight = 28;
 const gridWidth = 28;
 
 let mouseX = 0;
 let mouseY = 0;
-
-let h_scaler = size => Math.floor(canvas.height * size / 2);
-let w_scaler = size => Math.floor(canvas.width * size / 2);
-let fragment = size => Math.floor((canvas.width * size) / gridWidth)
 
 let pixels = [];
 
@@ -38,11 +44,11 @@ class Pixel {
 
 	draw() {
 		if (!this.isOn) {
-			ctx.fillStyle = '#d3d3d3';
-			ctx.strokeStyle = '#000000'
+			ctx.fillStyle = '#0d0d0d';
+			ctx.strokeStyle = '#0d0d0d';
 		} else {
-			ctx.fillStyle = '#838383';
-			ctx.strokeStyle = '#000000'
+			ctx.fillStyle = '#d3d3d3';
+			ctx.strokeStyle = '#d3d3d3'
 		}
 		ctx.beginPath();
 		ctx.fillRect(this.x, this.y, this.dim, this.dim);
@@ -51,6 +57,7 @@ class Pixel {
 	}
 }
 
+
 let pixelDim = null;
 let anchorX = null;
 let anchorY = null;
@@ -58,9 +65,9 @@ let gridBounding = null;
 
 let createGrid = () => {
 
-	pixelDim = fragment(0.3);
-	anchorX = w_scaler(0.7);
-	anchorY = h_scaler(0.7);
+	pixelDim = 20;
+	anchorX = (canvas.width / 2) - (pixelDim * (gridWidth/2));
+	anchorY = canvas.height / 2 - (pixelDim * (gridHeight/5));
 
 	gridBounding = [anchorX, anchorX + (pixelDim * gridWidth), anchorY, anchorY + (pixelDim * gridHeight)];
 
@@ -117,7 +124,46 @@ window.addEventListener('mouseup', e => {
     if (isWriting) {
         raw_matrix = parseGrid();
         // Predict with CNN.
-        predict(raw_matrix).print();
+        let softmax = predict(raw_matrix).dataSync();
+        let preds = Array.from(softmax).map(n => parseFloat(n.toPrecision(4)));
+        console.log(preds);
+
+        let bar = Chart.Bar(ctx_, {
+            // The data for our dataset
+            data: {
+                labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                datasets: [{
+                    backgroundColor: 'rgba(247, 127, 155, 0.5)',
+                    borderColor: 'black',
+                    data: preds,
+                    borderWidth: 2
+                }]
+            },
+            // Configuration options go here
+            options: {
+                legend: {
+                    display: false,
+                },
+                responsive: false,
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            fontSize: 30
+                        }
+    
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            fontSize: 25
+                        } 
+                    }]
+                }
+            }
+        });
+
+
+        //bar.resize(200, 100);
+
     }
 	isWriting = false;
 });
